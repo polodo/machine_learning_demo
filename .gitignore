@@ -1,0 +1,4 @@
+application/cache
+*.pyc
+*.csv
+*.h5
