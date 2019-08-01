@@ -1,22 +1,41 @@
 from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
 from keras.models import Sequential
+import numpy
 from keras.models import model_from_json
 from mysite.prediction.neural_network import *
 import time
 
+
+"""
+This is a demo that I use LSTM to train model used for Bitcoin price prediction.
+It will have 2 parts that I will do
+1. Crawling data from Binance for closed price for each period (usually use 30mins).
+    I will crawl data of 500 nearest days.
+    Each record is closed price in 30mins.
+    Total 24408 prices.
+2. Use ML to build model that it fit with given data.
+    - Step 1: Preprocess raw data above.
+    - Step 2: Build Model
+    - Step 3: Training Model and Evaluate Model, then save it for later use
+    - Step 4: Plot predictions on graph to visualize result.
+    - Step 5: Plot predictions trend in next 5 days to graph
+ 
+"""
+
 INTERVAL = 30 # int, minutes for time series
 window_size = 50 # window size for each record set
 
-BUILD_AND_PREDICT = True
+BUILD_AND_PREDICT = False
 model = Sequential()
 f = open('BTCUSDT_30mins.csv', 'r').read()
-data = f.split('\n')
-plot_graph_for_timeseries(data)
+data = [float(d) for d in f.split('\n')]
+print(min(data[-1030:]), max(data[-1030:]), (min(data[-1030:]) + max(data[-1030:])) / 2)
+
+# plot_graph_for_timeseries(data)
 
 #Step 1 Load Data
 X_train, y_train, X_test, y_test, data_for_demo = load_data('BTCUSDT_30mins.csv', window_size, True, False)
-
 if not BUILD_AND_PREDICT:
     # load json and create model
     json_file = open('model_3days.json', 'r')
@@ -68,3 +87,19 @@ else:
 # predictions = predict_sequences_multiple(model, X_test, window_size, len(y_test))
 predictions = predict_point_by_point(model, X_test)
 plot_results_multiple(predictions, y_test, len(y_test))
+
+
+#future unknown predictions: in this case, test_set doesn't exist
+
+future_pred_count = 5 * 24 * 2 #let's predict 100 new steps
+
+model.reset_states() #always reset states when inputting a new sequence
+
+#first, let set the model's states (it's important for it to know the previous trends)
+new_points = predict_sequences_multiple(model, X_test, window_size, future_pred_count)
+
+#after processing a sequence, reset the states for safety
+model.reset_states()
+future_predictions = numpy.append(predictions, new_points[-1])
+# future_predictions = numpy.append([0] * len(predictions), new_points[-1])
+plot_results_multiple(future_predictions, y_test, future_pred_count)

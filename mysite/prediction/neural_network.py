@@ -17,11 +17,30 @@ def plot_results_multiple(predicted_data, true_data, prediction_len):
     ax = fig.add_subplot(211)
     ax.plot(true_data, label='True Data')
     # Pad the list of predictions to shift it in the graph to it's correct start
-    print(predicted_data)
-    ax.plot(range(len(predicted_data)), [float(d) for d in predicted_data])
+    # print(predicted_data)
+    ax.plot(range(len(predicted_data[0: len(predicted_data) - prediction_len])), [float(d) for d in predicted_data[0: len(predicted_data) - prediction_len]])
+    new_data = [None] * len(predicted_data[0: len(predicted_data) - prediction_len])
+    new_x = [x for x in range(len(predicted_data[0: len(predicted_data) - prediction_len]))]
+    for data in predicted_data[-prediction_len:]:
+        new_data.append(data)
+        new_x.append(len(new_x) + 1)
+    ax.plot(new_x, new_data)
+    # find lowest point
+    min_p = [0, 0]
+    max_p = [0, 0]
+    for i, d in enumerate(predicted_data):
+        if d < min_p[-1]:
+            min_p = [i, d]
+            continue
+        if d > max_p[-1]:
+            max_p = [i, d]
+    ax.plot(min_p[0], min_p[1],"o")
+    ax.text(min_p[0] + 0.025, min_p[1] - 0.025, "Price = %f" % (11106.215 + min_p[1] * 11106.215))
+    ax.plot(max_p[0], max_p[1], "*")
+    ax.text(max_p[0] + 0.025, max_p[1] - 0.025, "Price = %f" % (11106.215 + max_p[1] * 11106.215))
     # for i, data in enumerate(predicted_data):
     #     padding = [None for p in range(i * prediction_len)]
-    #     plt.plot(padding + data)
+    #     plt.plot(padding + data, label='Prediction')
     #     plt.legend()
     plt.show()
 
