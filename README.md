@@ -1,5 +1,3 @@
-# machine_learning_demo
-
 ## CRAWL DATA DEMO
 python3 mysite/crawl_binance_data/crawl_data.py
 
