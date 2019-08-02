@@ -8,8 +8,8 @@ import datetime
 urllib3.disable_warnings()
 # requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-SECRET_KEY = "oOdLWuoRJVWYpEMtj6arcC1iCOK9nHd0lg5mIcKrOYXEBLpBOh9ZaRYSfwAR5Eht"
-API_KEY = "7bT35R9Lq0ZnV1AqT95mx5jO6CI1U1iAzCNtrsG0tOka8VwIMGUbV5iAsbVD32dR"
+SECRET_KEY = "replace by your key"
+API_KEY = "replace by your key"
 
 SYMBOL = "BTCUSDT"  # string, exchange symbol.
 INTERVAL_STR = Client.KLINE_INTERVAL_30MINUTE # string, param is put in request to send to Binance to get records.
